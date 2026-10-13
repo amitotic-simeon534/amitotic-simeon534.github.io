@@ -1,0 +1,16 @@
+Sound effects for Hold the Room. All recordings are CC0 / public domain.
+
+shot.mp3        - range recording of a pistol shot (trimmed), jjcunning via Freesound, CC0
+hit.mp3         - "Biting on bones" (trimmed), Breviceps via Freesound, CC0
+kill1, kill2    - "Zombie dies 1 / 2", Breviceps via Freesound, CC0
+moan1-3         - "Zombie moan 1 / 2 / 3", Breviceps via Freesound, CC0
+gargle1-3       - "Zombie gargles 1 / 2 / 3", Breviceps via Freesound, CC0
+board-tear.mp3  - battering ram bang on a heavy door (trimmed), SSE Library WOOD (USC / Sunset Editorial, via Craig Smith), public domain
+board-break.mp3 - falling wooden beam crash (trimmed), SSE Library WOOD, public domain
+board-fix.mp3   - wooden object thunk (trimmed), SSE Library WOOD, public domain
+buy.mp3         - cash register bell ding (trimmed), kyles via Freesound, CC0
+round.mp3       - "Stingers and Stabs 004" (trimmed), OverlookHotelRecords via Freesound, CC0
+hurt.mp3        - "Male Grunts" (trimmed), Kodack via Freesound, CC0
+ambience.mp3    - "Forest Rainstorm 02" as a seamless 30s loop, rifualk via Freesound, CC0
+
+All files trimmed and loudness-normalized with ffmpeg. Full provenance: github.com/coopz12 (ask Coop).
