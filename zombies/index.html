@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROUND 12 — A Call of Duty Zombies Tribute</title>
+<meta name="description" content="A fan-made tribute to Call of Duty Zombies: the arsenal, the perks, the maps, and the rules of survival. Board the windows.">
+<meta property="og:title" content="ROUND 12 — Zombies Tribute">
+<meta property="og:description" content="Board the windows. The arsenal, the perks, the maps, the rules.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b0b0d'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23b3202a' stroke-width='5'/%3E%3Cpath d='M32 18v28M18 32h28' stroke='%23b3202a' stroke-width='5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:wght@400;500;600&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coal:#0b0b0d;
+    --coal-2:#121215;
+    --panel:#17171b;
+    --bone:#d8d2c4;
+    --bone-dim:#8f887a;
+    --blood:#b3202a;
+    --blood-bright:#e0313c;
+    --hair:rgba(216,210,196,.14);
+    --ease:cubic-bezier(.32,.72,0,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--coal);color:var(--bone);
+    font-family:"Barlow Condensed",-apple-system,sans-serif;
+    font-size:18px;line-height:1.55;letter-spacing:.015em;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  body::before{ /* vignette + dust */
+    content:"";position:fixed;inset:0;z-index:60;pointer-events:none;
+    background:radial-gradient(ellipse 90% 70% at 50% 40%,transparent 55%,rgba(0,0,0,.55) 100%);
+  }
+  body::after{ /* grain */
+    content:"";position:fixed;inset:0;z-index:61;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  ::selection{background:var(--blood);color:#fff}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--blood-bright);outline-offset:3px}
+  .ops{font-family:"Black Ops One",system-ui}
+  .type{font-family:"Special Elite",monospace}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,44px)}
+
+  /* red flash on round change */
+  #flash{position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(179,32,42,.5));opacity:0;pointer-events:none;z-index:70;transition:opacity .18s}
+  #flash.on{opacity:1}
+
+  /* HUD */
+  .hud{
+    position:fixed;left:0;right:0;bottom:0;z-index:65;pointer-events:none;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    padding:18px clamp(16px,3.5vw,40px);
+    font-family:"Black Ops One",system-ui;
+    text-shadow:0 2px 10px rgba(0,0,0,.9);
+  }
+  .hud .round-lbl{font-size:12px;letter-spacing:.3em;color:var(--bone-dim)}
+  .hud .round-num{font-size:clamp(38px,5vw,54px);line-height:1;color:#fff}
+  .hud .round-num b{color:var(--blood-bright);font-weight:400}
+  .hud .points{text-align:right}
+  .hud .points .p{font-size:clamp(24px,3.4vw,34px);color:#fff;line-height:1}
+  .hud .points .l{font-size:11px;letter-spacing:.3em;color:var(--bone-dim);margin-top:4px}
+  .hud .perks-mini{display:flex;gap:7px;justify-content:flex-end;margin-bottom:8px}
+  .hud .perks-mini i{width:15px;height:15px;border-radius:4px 4px 7px 7px;display:block;border:1px solid rgba(0,0,0,.6)}
+
+  /* top strip */
+  .topstrip{
+    display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding:20px 0 0;font-size:14px;letter-spacing:.24em;color:var(--bone-dim);
+    text-transform:uppercase;font-weight:500;
+  }
+  .topstrip .warn{color:var(--blood-bright)}
+
+  /* hero */
+  .hero{padding:52px 0 30px;text-align:left;position:relative}
+  .hero .over{
+    font-family:"Special Elite",monospace;color:var(--blood-bright);
+    font-size:clamp(14px,2vw,17px);letter-spacing:.06em;margin-bottom:18px;
+  }
+  h1{
+    font-family:"Black Ops One",system-ui;font-weight:400;
+    font-size:clamp(64px,13.5vw,168px);line-height:.94;color:#ece7db;
+    text-transform:uppercase;letter-spacing:.01em;
+    text-shadow:0 0 34px rgba(179,32,42,.28);
+  }
+  h1 .red{color:var(--blood-bright)}
+  .hero .sub{
+    margin-top:26px;max-width:56ch;font-size:20px;color:#b6b0a1;font-weight:400;
+  }
+  .hero .sub b{color:var(--bone);font-weight:600}
+  .hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:36px}
+  .btn{
+    font-family:"Black Ops One",system-ui;font-size:15px;letter-spacing:.06em;
+    text-decoration:none;cursor:pointer;border-radius:6px;padding:15px 26px;
+    transition:transform .25s var(--ease),background .25s,border-color .25s;
+    display:inline-block;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn.blood{background:var(--blood);color:#fff;border:1px solid var(--blood)}
+  .btn.blood:hover{background:var(--blood-bright)}
+  .btn.line{background:transparent;color:var(--bone);border:1px solid var(--hair)}
+  .btn.line:hover{border-color:var(--bone-dim)}
+  #nextRound{pointer-events:auto}
+
+  /* barricade divider */
+  .barricade{
+    margin:56px 0 0;border-top:2px solid var(--hair);
+    position:relative;height:0;
+  }
+  .barricade::before,.barricade::after{
+    content:"";position:absolute;left:0;right:0;height:9px;
+    background:repeating-linear-gradient(90deg,#3a2f22 0 64px,#2c2318 64px 128px);
+    border-top:1px solid rgba(0,0,0,.7);border-bottom:1px solid rgba(0,0,0,.7);
+    opacity:.85;
+  }
+  .barricade::before{top:8px;transform:rotate(-.35deg)}
+  .barricade::after{top:22px;transform:rotate(.3deg)}
+
+  /* sections */
+  section.block{padding:88px 0 0}
+  .sec-head{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+  .sec-head h2{
+    font-family:"Black Ops One",system-ui;font-weight:400;
+    font-size:clamp(30px,4.6vw,48px);text-transform:uppercase;color:#ece7db;
+  }
+  .sec-head .type{color:var(--blood-bright);font-size:15px}
+  .sec-sub{margin-top:12px;color:#a49d8d;max-width:58ch;font-size:18.5px}
+
+  /* arsenal wall */
+  .wall{
+    margin-top:36px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  }
+  .gun{
+    background:linear-gradient(170deg,var(--panel),var(--coal-2));
+    border:1px solid var(--hair);border-radius:10px;padding:24px 22px 20px;
+    position:relative;overflow:hidden;
+    transition:border-color .25s,transform .25s var(--ease);
+  }
+  .gun:hover{border-color:rgba(224,49,60,.5);transform:translateY(-3px)}
+  .gun .chalk{
+    font-family:"Special Elite",monospace;color:rgba(216,210,196,.5);
+    font-size:12.5px;letter-spacing:.1em;
+  }
+  .gun h3{font-family:"Black Ops One",system-ui;font-weight:400;font-size:23px;color:#fff;margin-top:8px;line-height:1.15}
+  .gun p{color:#a49d8d;font-size:16.5px;margin-top:9px}
+  .gun .row{
+    display:flex;justify-content:space-between;align-items:baseline;margin-top:18px;
+    border-top:1px dashed var(--hair);padding-top:14px;
+  }
+  .gun .price{font-family:"Black Ops One",system-ui;color:var(--blood-bright);font-size:17px}
+  .gun .price small{color:var(--bone-dim);font-size:11px;letter-spacing:.14em}
+  .gun .pap{font-size:13.5px;color:var(--bone-dim);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+  .gun .pap b{color:#c9a86a;font-weight:600}
+  .gun.wonder{border-color:rgba(201,168,106,.4)}
+  .gun.wonder h3{color:#e8cf9a}
+
+  /* perks */
+  .perks{margin-top:36px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .perk{
+    border-radius:12px;padding:24px 20px 22px;color:#fff;position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .perk::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(200deg,rgba(255,255,255,.16),transparent 45%);
+    pointer-events:none;
+  }
+  .perk .cap{
+    width:38px;height:38px;border-radius:50%;border:2.5px solid rgba(255,255,255,.75);
+    display:grid;place-items:center;font-family:"Black Ops One",system-ui;font-size:16px;
+    background:rgba(0,0,0,.25);margin-bottom:16px;
+  }
+  .perk h3{font-family:"Black Ops One",system-ui;font-weight:400;font-size:20px;line-height:1.2}
+  .perk p{font-size:16px;color:rgba(255,255,255,.85);margin-top:8px}
+  .perk .cost{margin-top:16px;font-family:"Black Ops One",system-ui;font-size:15px;color:rgba(255,255,255,.92)}
+  .perk .cost small{display:block;font-size:11px;letter-spacing:.16em;color:rgba(255,255,255,.6);margin-top:2px}
+  .perk.jug{background:linear-gradient(165deg,#7e1a20,#571014)}
+  .perk.speed{background:linear-gradient(165deg,#2c6e31,#1a4720)}
+  .perk.revive{background:linear-gradient(165deg,#1f4d6e,#12334a)}
+  .perk.tap{background:linear-gradient(165deg,#8a6414,#5e430d)}
+
+  /* maps */
+  .maps{margin-top:36px;border-top:1px solid var(--hair)}
+  .map-row{
+    display:grid;grid-template-columns:120px 1fr auto;gap:8px 26px;align-items:baseline;
+    padding:24px 6px;border-bottom:1px solid var(--hair);
+    transition:background .2s;
+  }
+  .map-row:hover{background:rgba(216,210,196,.03)}
+  .map-row .yr{font-family:"Special Elite",monospace;color:var(--blood-bright);font-size:15px}
+  .map-row h3{font-family:"Black Ops One",system-ui;font-weight:400;font-size:22px;color:#ece7db}
+  .map-row p{color:#a49d8d;font-size:16.5px;margin-top:4px;max-width:62ch}
+  .map-row .game{font-size:13.5px;letter-spacing:.14em;color:var(--bone-dim);text-transform:uppercase;font-weight:600;white-space:nowrap}
+
+  /* field notes */
+  .notes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+  .note{
+    background:#1c1a15;border:1px solid rgba(216,210,196,.1);border-radius:6px;
+    padding:24px 22px;transform:rotate(-.5deg);
+  }
+  .note:nth-child(2){transform:rotate(.6deg)}
+  .note:nth-child(3){transform:rotate(-.3deg)}
+  .note .type{color:#c9a86a;font-size:13px;letter-spacing:.08em}
+  .note p{font-family:"Special Elite",monospace;font-size:16.5px;line-height:1.65;color:#d8d2c4;margin-top:10px}
+
+  /* game over */
+  .gameover{
+    margin-top:96px;border-top:2px solid var(--hair);
+    padding:70px 0 130px;text-align:center;
+  }
+  .gameover .big{
+    font-family:"Black Ops One",system-ui;font-size:clamp(38px,7.5vw,84px);
+    color:#ece7db;text-transform:uppercase;line-height:1;
+  }
+  .gameover .big span{color:var(--blood-bright)}
+  .tally{
+    font-family:"Special Elite",monospace;font-size:22px;color:var(--bone-dim);
+    letter-spacing:.35em;margin-top:22px;
+  }
+  .gameover p{color:#a49d8d;margin-top:16px}
+  .gameover .links{margin-top:26px;font-size:16px;letter-spacing:.1em}
+  .gameover .links a{color:var(--bone-dim);text-decoration:none;margin:0 12px;text-transform:uppercase;font-weight:600;font-size:14px;letter-spacing:.18em}
+  .gameover .links a:hover{color:var(--bone)}
+
+  @media (max-width:940px){
+    .wall{grid-template-columns:1fr 1fr}
+    .perks{grid-template-columns:1fr 1fr}
+    .notes{grid-template-columns:1fr}
+    .map-row{grid-template-columns:1fr}
+    .map-row .game{justify-self:start}
+  }
+  @media (max-width:600px){
+    .wall,.perks{grid-template-columns:1fr}
+    .hud .perks-mini{display:none}
+    section.block{padding-top:64px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{transition-duration:.001s !important;animation-duration:.001s !important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<div id="flash"></div>
+
+<div class="wrap">
+  <div class="topstrip">
+    <span>Signal intercepted · 1945</span>
+    <span class="warn">Threat level: rising</span>
+    <span>Element 115 detected</span>
+  </div>
+
+  <section class="hero">
+    <p class="over">"You drove them deep into the ground..." — transmission fragment, recovered</p>
+    <h1>Call of Duty<br><span class="red">Zombies</span></h1>
+    <p class="sub">No rescue coming. No extraction. Just you, a wall of chalk outlines, a rattling mystery box, and however many rounds you can buy with the points in your pocket. <b>Board the windows, spend smart, and never, ever train them toward the perks.</b></p>
+    <div class="cta">
+      <button class="btn blood" id="nextRound" type="button">Start next round</button>
+      <a class="btn line" href="#arsenal">Check the wall buys</a>
+    </div>
+  </section>
+
+  <div class="barricade" aria-hidden="true"></div>
+
+  <section class="block" id="arsenal">
+    <div class="sec-head"><h2>The Arsenal</h2><span class="type">// chalk on concrete, prices in points</span></div>
+    <p class="sec-sub">Every wall has an outline and a price tag. The box has neither mercy nor a price you can predict. Choose like your run depends on it, because it does.</p>
+    <div class="wall">
+      <article class="gun">
+        <div class="chalk">WALL BUY · STARTING ROOM</div>
+        <h3>M1911</h3>
+        <p>Everyone's first friend and first disappointment. Eight rounds of optimism, best spent on headshots and early points.</p>
+        <div class="row"><span class="price">START <small>ISSUE</small></span><span class="pap">PAP · <b>Mustang &amp; Sally</b></span></div>
+      </article>
+      <article class="gun">
+        <div class="chalk">WALL BUY · COURTYARD</div>
+        <h3>Kar98k</h3>
+        <p>Bolt action, iron sights, pure point farming for the first five rounds. Falls off hard. So does everyone who trusts it past round nine.</p>
+        <div class="row"><span class="price">200 <small>POINTS</small></span><span class="pap">PAP · <b>Armageddon</b></span></div>
+      </article>
+      <article class="gun">
+        <div class="chalk">WALL BUY · THEATRE</div>
+        <h3>MP40</h3>
+        <p>The reliable paycheck of Kino. Chews through the mid rounds, prints points, and never once asks for a wonder weapon's drama.</p>
+        <div class="row"><span class="price">1,000 <small>POINTS</small></span><span class="pap">PAP · <b>The Afterburner</b></span></div>
+      </article>
+      <article class="gun wonder">
+        <div class="chalk">MYSTERY BOX · 950 A PULL</div>
+        <h3>Ray Gun</h3>
+        <p>Green splash damage in a pistol frame, the box's love letter. Splashes you too, if you panic. Everyone panics eventually.</p>
+        <div class="row"><span class="price">BOX <small>ONLY</small></span><span class="pap">PAP · <b>Porter's X2</b></span></div>
+      </article>
+      <article class="gun wonder">
+        <div class="chalk">MYSTERY BOX · DER RIESE</div>
+        <h3>Wunderwaffe DG-2</h3>
+        <p>Chain lightning that clears a train in one crackle. Fires rarely, matters always. The sound alone raises morale two rounds.</p>
+        <div class="row"><span class="price">BOX <small>ONLY</small></span><span class="pap">PAP · <b>DG-3 JZ</b></span></div>
+      </article>
+      <article class="gun wonder">
+        <div class="chalk">MYSTERY BOX · ASCENSION</div>
+        <h3>Thundergun</h3>
+        <p>Compressed air with a grudge. One blast turns a breached room back into a room. Twelve shots between you and a very bad evening.</p>
+        <div class="row"><span class="price">BOX <small>ONLY</small></span><span class="pap">PAP · <b>Zeus Cannon</b></span></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="perks">
+    <div class="sec-head"><h2>Perk-a-Colas</h2><span class="type">// drink up, you will need all four</span></div>
+    <p class="sec-sub">Four machines, four jingle-driven promises. Lose them all when you go down, which is the game's way of teaching humility.</p>
+    <div class="perks">
+      <article class="perk jug">
+        <div class="cap">J</div>
+        <h3>Juggernog</h3>
+        <p>Double health. The difference between a two-hit tragedy and a five-hit escape story. First buy, no debate.</p>
+        <div class="cost">2,500<small>POINTS</small></div>
+      </article>
+      <article class="perk speed">
+        <div class="cap">S</div>
+        <h3>Speed Cola</h3>
+        <p>Reloads at double speed. Half the deaths in this game happen mid-reload. This is the other half of not dying.</p>
+        <div class="cost">3,000<small>POINTS</small></div>
+      </article>
+      <article class="perk revive">
+        <div class="cap">Q</div>
+        <h3>Quick Revive</h3>
+        <p>In solo, it picks you back up once, gun in hand. In co-op, it halves the revive time. Either way, cheap insurance.</p>
+        <div class="cost">1,500<small>POINTS · 500 IN SOLO</small></div>
+      </article>
+      <article class="perk tap">
+        <div class="cap">D</div>
+        <h3>Double Tap</h3>
+        <p>Root beer with a fire rate problem. Bullets leave faster, trains melt sooner, ammo vanishes like it was never yours.</p>
+        <div class="cost">2,000<small>POINTS</small></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="maps">
+    <div class="sec-head"><h2>The Maps</h2><span class="type">// where it happened, in order</span></div>
+    <div class="maps">
+      <div class="map-row">
+        <span class="yr">1945</span>
+        <div><h3>Nacht der Untoten</h3><p>A crashed plane, a concrete bunker, four windows, and the mode that started everything. No perks, no Pack-a-Punch, nowhere to run. Pure.</p></div>
+        <span class="game">World at War</span>
+      </div>
+      <div class="map-row">
+        <span class="yr">1945</span>
+        <div><h3>Verrückt</h3><p>An asylum split in two, the first map with perks and power to switch on. Tight halls, tighter corners, and the birth of the sprinters.</p></div>
+        <span class="game">World at War</span>
+      </div>
+      <div class="map-row">
+        <span class="yr">1945</span>
+        <div><h3>Shi No Numa</h3><p>A swamp, four huts, and the Wunderwaffe's debut. The fog does half the zombies' work for them.</p></div>
+        <span class="game">World at War</span>
+      </div>
+      <div class="map-row">
+        <span class="yr">1945</span>
+        <div><h3>Der Riese</h3><p>The factory where it all went wrong: teleporters, the Pack-a-Punch, monkey bombs, and the fly trap. The blueprint every map after it chases.</p></div>
+        <span class="game">World at War</span>
+      </div>
+      <div class="map-row">
+        <span class="yr">1963</span>
+        <div><h3>Kino der Toten</h3><p>An abandoned Berlin theatre with a teleporter wired to the projector. The training ground a whole generation learned to run circles in.</p></div>
+        <span class="game">Black Ops</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="intel">
+    <div class="sec-head"><h2>Survival Intel</h2><span class="type">// field notes, author unknown</span></div>
+    <div class="notes">
+      <article class="note">
+        <span class="type">NOTE 01 · POINTS</span>
+        <p>Rounds 1 to 4 are farming, not fighting. Knife the early ones, shoot legs before heads, and let the barricades earn their rebuild points. A rich round five beats a heroic round two.</p>
+      </article>
+      <article class="note">
+        <span class="type">NOTE 02 · THE TRAIN</span>
+        <p>Keep them in a herd, keep the herd moving, and never stop sprinting in a straight line. The moment you check your points mid-train, the train checks you.</p>
+      </article>
+      <article class="note">
+        <span class="type">NOTE 03 · THE CRAWLER</span>
+        <p>Always leave a crawler at the end of a round. It is the difference between a calm shopping trip and buying Juggernog while the ceiling comes down. Guard him with your life. He is the pause button.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="gameover">
+    <div class="big">You survived <span id="finalRounds">12 rounds</span></div>
+    <div class="tally" id="tally">|||| |||| ||</div>
+    <p>Fan-made tribute. Not affiliated with Activision or Treyarch. The box owes everyone money.</p>
+    <div class="links">
+      <a href="https://coopz12.github.io/">Build log</a>
+      <a href="https://coopz12.github.io/blueprint/">Blueprint</a>
+      <a href="https://coopz12.github.io/arcade/">Arcade</a>
+    </div>
+  </div>
+</div>
+
+<div class="hud" aria-hidden="true">
+  <div>
+    <div class="round-lbl">Round</div>
+    <div class="round-num" id="hudRound">1<b>2</b></div>
+  </div>
+  <div class="points">
+    <div class="perks-mini">
+      <i style="background:#b3202a"></i><i style="background:#3f9e4d"></i><i style="background:#3f7fae"></i><i style="background:#d29a26"></i>
+    </div>
+    <div class="p num" id="hudPoints">500</div>
+    <div class="l">Points</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var round = 12, points = 500;
+  var roundEl = document.getElementById("hudRound");
+  var pointsEl = document.getElementById("hudPoints");
+  var finalEl = document.getElementById("finalRounds");
+  var tallyEl = document.getElementById("tally");
+  var flash = document.getElementById("flash");
+
+  function renderRound(){
+    var s = String(round);
+    roundEl.innerHTML = s.length > 1 ? s.slice(0, -1) + "<b>" + s.slice(-1) + "</b>" : "<b>" + s + "</b>";
+    finalEl.textContent = round + (round === 1 ? " round" : " rounds");
+    var groups = [];
+    var full = Math.floor(round / 5), rem = round % 5;
+    for(var i = 0; i < full; i++) groups.push("|||||");
+    if(rem) groups.push("|".repeat(rem));
+    tallyEl.textContent = groups.join("  ");
+  }
+  function renderPoints(){ pointsEl.textContent = points.toLocaleString("en-US"); }
+  renderRound(); renderPoints();
+
+  /* ambient: the horde pays slowly, like interest */
+  var ticker = setInterval(function(){
+    points += 10;
+    renderPoints();
+  }, 4000);
+
+  document.getElementById("nextRound").addEventListener("click", function(){
+    round += 1;
+    flash.classList.add("on");
+    setTimeout(function(){ flash.classList.remove("on"); }, 220);
+    renderRound();
+  });
+})();
+</script>
+</body>
+</html>
