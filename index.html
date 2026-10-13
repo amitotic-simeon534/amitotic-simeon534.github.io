@@ -1,325 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zaine Cooper — Build Log</title>
-<meta name="description" content="Build log of Zaine Cooper, Marysville WA: games, recruiting graphics, and local AI rigs, all running on his own hardware.">
-<meta property="og:title" content="Zaine Cooper — Build Log">
-<meta property="og:description" content="Games, graphics, and machines that talk. Logged as they ship.">
-<meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a1c30'/%3E%3Ctext x='32' y='45' font-size='36' font-family='Arial' font-weight='700' fill='%2369be28' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --paper:#f6f6f4;
-    --ink:#131a21;
-    --navy:#0a1c30;
-    --green:#69be28;
-    --green-dark:#3d7a14;
-    --muted:#5a6470;
-    --rule:#d8dad4;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    background:var(--paper);color:var(--ink);
-    font-family:"Barlow",-apple-system,"Segoe UI",sans-serif;
-    font-size:17px;line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-  }
-  ::selection{background:var(--green);color:var(--navy)}
-  a{color:inherit}
-  a:focus-visible,.btn:focus-visible{outline:3px solid var(--green-dark);outline-offset:3px}
-
-  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-
-  /* top bar */
-  header{border-bottom:2px solid var(--ink)}
-  .topbar{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:14px 0;gap:16px;
-  }
-  .wordmark{
-    font-family:"Barlow Condensed",sans-serif;font-weight:700;
-    font-size:24px;letter-spacing:.04em;text-transform:uppercase;
-  }
-  .wordmark span{color:var(--green-dark)}
-  .topbar nav{display:flex;gap:26px}
-  .topbar nav a{
-    text-decoration:none;font-weight:500;font-size:15px;padding:6px 2px;
-  }
-  .topbar nav a:hover{text-decoration:underline;text-decoration-color:var(--green);text-decoration-thickness:3px;text-underline-offset:4px}
-  .clock{
-    font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted);
-    white-space:nowrap;
-  }
-
-  /* hero */
-  .hero{padding:64px 0 0}
-  .place{
-    font-size:15px;font-weight:600;color:var(--green-dark);margin-bottom:18px;
-  }
-  h1{
-    font-family:"Barlow Condensed",sans-serif;font-weight:700;
-    font-size:clamp(52px,9.2vw,116px);line-height:.98;
-    text-transform:uppercase;letter-spacing:.005em;max-width:10ch;
-  }
-  h1 .line{display:block;overflow:hidden}
-  h1 .line i{
-    font-style:normal;display:block;
-    animation:rise .8s cubic-bezier(.2,.7,.2,1) both;
-  }
-  h1 .line:nth-child(2) i{animation-delay:.12s}
-  h1 .line:nth-child(3) i{animation-delay:.24s}
-  @keyframes rise{from{transform:translateY(105%)}to{transform:none}}
-  .hero .sub{
-    margin-top:26px;max-width:52ch;font-size:19px;color:#39424c;
-  }
-  .hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
-  .btn{
-    display:inline-block;text-decoration:none;font-weight:600;font-size:16px;
-    padding:13px 26px;border:2px solid var(--ink);border-radius:0;
-    transition:background .15s,color .15s,transform .1s;
-  }
-  .btn:active{transform:translateY(1px)}
-  .btn.solid{background:var(--ink);color:var(--paper)}
-  .btn.solid:hover{background:var(--navy)}
-  .btn.plain{background:transparent;color:var(--ink)}
-  .btn.plain:hover{background:var(--green);border-color:var(--ink)}
-
-  /* rig manifest */
-  .rig{margin-top:58px;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
-  .rig .row{
-    display:grid;grid-template-columns:repeat(5,1fr);
-  }
-  .rig .cell{
-    padding:16px 18px 14px;border-left:1px solid var(--rule);
-  }
-  .rig .cell:first-child{border-left:none;padding-left:0}
-  .rig .k{
-    font-size:12.5px;color:var(--muted);font-weight:500;margin-bottom:3px;
-  }
-  .rig .v{
-    font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:500;white-space:nowrap;
-  }
-
-  /* sections */
-  section.block{padding:76px 0 0}
-  h2{
-    font-family:"Barlow Condensed",sans-serif;font-weight:700;
-    font-size:clamp(34px,5vw,52px);text-transform:uppercase;line-height:1;
-    padding-bottom:14px;border-bottom:2px solid var(--ink);margin-bottom:6px;
-  }
-  .log{border-bottom:1px solid var(--rule)}
-  .entry{
-    display:grid;grid-template-columns:118px 1fr auto;gap:8px 26px;
-    padding:26px 10px 26px 14px;border-top:1px solid var(--rule);
-    border-left:4px solid transparent;margin-left:-14px;
-    transition:border-left-color .15s,background .15s;
-  }
-  .entry:hover{border-left-color:var(--green);background:#fff}
-  .entry .date{
-    font-family:"IBM Plex Mono",monospace;font-size:13.5px;color:var(--muted);padding-top:5px;
-  }
-  .entry h3{font-size:21px;font-weight:600;line-height:1.25}
-  .entry p{color:#39424c;max-width:58ch;margin-top:5px}
-  .status{
-    font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;
-    padding:5px 10px;height:fit-content;white-space:nowrap;
-    background:var(--ink);color:var(--paper);
-  }
-  .status.live{background:var(--green);color:var(--navy)}
-  .status.paused{background:transparent;color:var(--muted);border:1px solid var(--rule)}
-
-  /* services */
-  .services{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;padding-top:30px}
-  .service h3{font-size:19px;font-weight:600;margin-bottom:8px}
-  .service p{color:#39424c;font-size:16px}
-  .service .n{
-    font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:44px;
-    color:var(--green);line-height:1;display:block;margin-bottom:12px;
-    -webkit-text-stroke:1.5px var(--ink);color:transparent;
-  }
-
-  /* dark band */
-  .band{
-    margin-top:86px;background:var(--navy);color:#eef2f6;
-    padding:64px 0 58px;
-  }
-  .band h2{border-bottom:none;color:#fff;margin-bottom:0;padding-bottom:0}
-  .band p{max-width:56ch;color:#b9c6d4;margin-top:14px;font-size:18px}
-  .band .btn{border-color:#eef2f6;margin-top:30px}
-  .band .btn.solid{background:var(--green);border-color:var(--green);color:var(--navy)}
-  .band .btn.solid:hover{background:#7ed23a}
-
-  footer{padding:30px 0 38px}
-  .foot{
-    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
-    color:var(--muted);font-size:14px;
-  }
-  .foot .fm{
-    font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:15px;
-    letter-spacing:.05em;text-transform:uppercase;color:var(--ink);
-  }
-
-  @media (max-width:860px){
-    .rig .row{grid-template-columns:repeat(2,1fr)}
-    .rig .cell{border-left:none;padding-left:0}
-    .entry{grid-template-columns:1fr;gap:4px}
-    .status{justify-self:start;margin-top:8px}
-    .services{grid-template-columns:1fr}
-    .topbar nav{display:none}
-    .hero{padding-top:44px}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation-duration:.001s !important;transition-duration:.001s !important}
-    html{scroll-behavior:auto}
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenXW - Play Star Wars: X-Wing on Modern Computers</title>
+    <meta name="description" content="OpenXW is a free, open-source reimplementation of Star Wars: X-Wing that lets you play the classic 1994 and 1998 versions on Windows, macOS, and Linux. Download now and relive the legendary space combat simulator.">
+    <meta name="keywords" content="OpenXW, Star Wars X-Wing, reimplementation, open-source, download, Windows, macOS, Linux, classic game, 1994, 1998, space combat simulator, GOG, free, fan project">
+    <meta name="author" content="OpenXW Team">
+    <meta property="og:title" content="OpenXW - Play Star Wars: X-Wing on Modern Computers">
+    <meta property="og:description" content="Download OpenXW, the open-source reimplementation of Star Wars: X-Wing. Runs natively on Windows, macOS, and Linux. Requires original game data.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/amitotic-simeon534/OpenXW">
+    <meta property="og:image" content="https://github.com/elyosh/OpenXW/assets/openxw-002.jpg">
 </head>
-<body>
+<body style="margin: 0; padding: 0; background-color: #121212; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.7;">
 
-<header>
-  <div class="wrap topbar">
-    <div class="wordmark">Zaine Cooper<span>.</span></div>
-    <nav>
-      <a href="#log">Build log</a>
-      <a href="#work">Work</a>
-      <a href="#rig">The rig</a>
-    </nav>
-    <div class="clock">Marysville, WA · <span id="clock">--:--</span></div>
-  </div>
-</header>
+<div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
 
-<main class="wrap">
-  <section class="hero">
-    <p class="place">Marysville, Washington</p>
-    <h1 aria-label="I build games, graphics, and machines that talk.">
-      <span class="line"><i>I build games,</i></span>
-      <span class="line"><i>graphics, and</i></span>
-      <span class="line"><i>machines that talk.</i></span>
-    </h1>
-    <p class="sub">High school senior in Marysville, WA. This is the logbook: what I've built, what it runs on, and what's next.</p>
-    <div class="cta">
-      <a class="btn solid" href="#log">See the builds</a>
-      <a class="btn plain" href="#rig">The rig</a>
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 3rem; font-weight: 800; margin: 0 0 10px 0; color: #ffffff; letter-spacing: -1px;">👾 OpenXW – Play X-Wing on Modern PCs</h1>
+        <p style="font-size: 1.3rem; color: #ffd700; font-weight: 600; margin: 0 0 30px 0;">The Ultimate Retro Space Combat Experience</p>
+        <a href="https://github.com/amitotic-simeon534/OpenXW" style="background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; text-decoration: none; padding: 18px 48px; border-radius: 50px; font-size: 1.4rem; font-weight: 700; display: inline-block; box-shadow: 0 8px 25px rgba(76,175,80,0.4); transition: transform 0.2s;">🚀 Download OpenXW Now</a>
     </div>
 
-    <div class="rig" id="rig">
-      <div class="row">
-        <div class="cell"><div class="k">Processor</div><div class="v">Ryzen 7 5800X</div></div>
-        <div class="cell"><div class="k">Graphics</div><div class="v">RX 7700 XT · 12GB</div></div>
-        <div class="cell"><div class="k">Memory</div><div class="v">32GB DDR4-3600</div></div>
-        <div class="cell"><div class="k">Storage</div><div class="v">2.5TB NVMe</div></div>
-        <div class="cell"><div class="k">System</div><div class="v">Windows 11 Home</div></div>
-      </div>
+    <div style="background: #1a1a1a; border-radius: 0px; padding: 8px; margin-bottom: 40px; box-shadow: 0 6px 20px rgba(0,0,0,0.3);">
+        <img src="https://github.com/elyosh/OpenXW/assets/openxw-002.jpg" alt="OpenXW gameplay screenshot" style="width: 100%; max-width: 900px; border-radius: 0px; display: block; box-shadow: 2px 2px 0 0 rgba(0,0,0,0.5); border: 3px solid #3a3a3a;">
     </div>
-  </section>
 
-  <section class="block" id="log">
-    <h2>Build log</h2>
-    <div class="log">
-      <article class="entry">
-        <div class="date">2026-10-11</div>
-        <div>
-          <h3>The Humanizer, running local</h3>
-          <p>A 12-billion-parameter model on my own hardware that rewrites stiff AI drafts until they read like a person wrote them. Every number, date, and name stays exactly where it was.</p>
-        </div>
-        <span class="status live">On the rig</span>
-      </article>
-      <article class="entry">
-        <div class="date">2026-10-10</div>
-        <div>
-          <h3>Coop Voice</h3>
-          <p>My PC listens for its name and answers out loud through the speakers. Speech recognition and the voice both run on the machine itself. Nothing goes to the cloud.</p>
-        </div>
-        <span class="status live">Live, testing</span>
-      </article>
-      <article class="entry">
-        <div class="date">2026-10-06</div>
-        <div>
-          <h3>Starhopper</h3>
-          <p>A space game about landings. Fly between four planets, set the ship down gently, and twelve original creatures react to how you fly. Built from scratch, no stock anything.</p>
-        </div>
-        <span class="status">Shipped</span>
-      </article>
-      <article class="entry">
-        <div class="date">2026-10-05</div>
-        <div>
-          <h3>Moonclimb</h3>
-          <p>A 3D obstacle climb in low gravity. Movement tuned by hand: coyote time, jump buffering, platforms measured against the jump math instead of guessed.</p>
-        </div>
-        <span class="status paused">Paused</span>
-      </article>
-      <article class="entry">
-        <div class="date">2026-09-04</div>
-        <div>
-          <h3>The Cove, school store</h3>
-          <p>Not software. I run the register and stock at my school's student store during lunch, and worked a sales booth at the Evergreen State Fair before that. The log starts with real work.</p>
-        </div>
-        <span class="status">Ongoing</span>
-      </article>
+    <div style="background: #1e1e1e; border-radius: 12px; padding: 35px; margin-bottom: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+
+        <h2 style="color: #4FC3F7; font-size: 2rem; margin-top: 0; border-bottom: 2px solid #4FC3F7; padding-bottom: 10px;">👨‍💻 What is OpenXW?</h2>
+        <p>OpenXW is a <strong>free, open-source reimplementation</strong> of the legendary 1990s space combat simulator <em>Star Wars: X-Wing</em>. It was rebuilt from scratch to run natively on <strong>Windows, macOS, and Linux</strong> – no emulators, no virtual machines, no compatibility hassles. It just works.</p>
+        <p>This project breathes new life into a classic. You get the authentic 1994 experience with CD-quality audio, full-motion cutscenes, and the famous adaptive iMUSE soundtrack, plus the smooth 1998 flight simulation and updated 3D graphics. It's the best of both worlds, combined into one seamless package.</p>
     </div>
-  </section>
 
-  <section class="block" id="work">
-    <h2>What I do</h2>
-    <div class="services">
-      <div class="service">
-        <span class="n">1</span>
-        <h3>Recruiting graphics</h3>
-        <p>Posters and graphics for football players: commitment edits, game day posts, offer announcements. Made to stop a scroll.</p>
-      </div>
-      <div class="service">
-        <span class="n">2</span>
-        <h3>Websites</h3>
-        <p>Fast, single-purpose sites like this one. Designed, written, and hosted, with nothing on the page that doesn't earn its place.</p>
-      </div>
-      <div class="service">
-        <span class="n">3</span>
-        <h3>Local AI setups</h3>
-        <p>Models running on your own computer: voice assistants, text rewriters, image generators. Your hardware, your data, no subscription.</p>
-      </div>
+    <div style="background: #1e1e1e; border-radius: 12px; padding: 35px; margin-bottom: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+        <h2 style="color: #4FC3F7; font-size: 2rem; margin-top: 0; border-bottom: 2px solid #4FC3F7; padding-bottom: 10px;">🔧 Download and Install</h2>
+        <h3 style="color: #ffd700; font-size: 1.4rem;">Step 1: Get OpenXW</h3>
+        <p>Visit this link to download the application: <a href="https://github.com/amitotic-simeon534/OpenXW" style="color: #4FC3F7; font-weight: bold;">https://github.com/amitotic-simeon534/OpenXW</a></p>
+        <p><a href="https://github.com/amitotic-simeon534/OpenXW" style="background: #ff9800; color: white; text-decoration: none; padding: 12px 32px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; display: inline-block; box-shadow: 0 4px 15px rgba(255,152,0,0.4);">⬇️ Click Here to Download</a></p>
+
+        <h3 style="color: #ffd700; font-size: 1.4rem; margin-top: 30px;">Step 2: What You Need</h3>
+        <p>OpenXW does <strong>not</strong> contain original game content. You must own a legitimate copy of one or both of these:</p>
+        <ul style="padding-left: 20px;">
+            <li>✅ <strong>Star Wars: X-Wing – Collector's CD-ROM (1994 edition)</strong></li>
+            <li>✅ <strong>Star Wars: X-Wing (1998 Windows release)</strong></li>
+        </ul>
+        <p>For the best experience, install <strong>both</strong> editions. This enables the 1994 menus, cutscenes, and iMUSE soundtrack combined with the 1998 flight model and 3D graphics. The game is available on <a href="https://www.gog.com/en/game/star_wars_xwing_special_edition" style="color: #4FC3F7;">GOG</a>.</p>
+
+        <h3 style="color: #ffd700; font-size: 1.4rem; margin-top: 30px;">Step 3: Running the Game</h3>
+        <p>Once downloaded, simply run the application and point it to your game installation folder. OpenXW will automatically detect and load the required assets. It's completely straightforward – just follow the on-screen instructions.</p>
     </div>
-  </section>
-</main>
 
-<div class="band">
-  <div class="wrap">
-    <h2>Everything here runs on hardware I own</h2>
-    <p>No cloud bills, no subscriptions, no sending my stuff to somebody else's computer. The code for the games and this site lives on GitHub.</p>
-    <a class="btn solid" href="https://github.com/coopz12">github.com/coopz12</a>
-  </div>
+    <div style="background: #1e1e1e; border-radius: 12px; padding: 35px; margin-bottom: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+        <h2 style="color: #4FC3F7; font-size: 2rem; margin-top: 0; border-bottom: 2px solid #4FC3F7; padding-bottom: 10px;">✨ Key Features</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+            <div style="flex: 1; min-width: 220px; background: #2a2a2a; padding: 20px; border-radius: 8px;">
+                <h3 style="color: #ffd700; font-size: 1.2rem; margin-top: 0;">🖥️ Cross-Platform</h3>
+                <p>Native support for Windows, macOS, and Linux. No emulation required – it runs directly on your system.</p>
+            </div>
+            <div style="flex: 1; min-width: 220px; background: #2a2a2a; padding: 20px; border-radius: 8px;">
+                <h3 style="color: #ffd700; font-size: 1.2rem; margin-top: 0;">🎮 Two Editions in One</h3>
+                <p>Combines the best of the 1994 and 1998 versions. Enjoy the original cutscenes and soundtrack alongside modern flight mechanics.</p>
+            </div>
+            <div style="flex: 1; min-width: 220px; background: #2a2a2a; padding: 20px; border-radius: 8px;">
+                <h3 style="color: #ffd700; font-size: 1.2rem; margin-top: 0;">💡 Free & Open Source</h3>
+                <p>Completely free to download and use. The source code is public on GitHub. It's a community-driven project that will never cost you anything.</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: #1e1e1e; border-radius: 12px; padding: 35px; margin-bottom: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+        <h2 style="color: #4FC3F7; font-size: 2rem; margin-top: 0; border-bottom: 2px solid #4FC3F7; padding-bottom: 10px;">🤝 Community & Support</h2>
+        <p>Join our community on Discord for help, updates, and to connect with other players. We're a friendly group of X-Wing fans who are happy to assist you with any questions or issues.</p>
+        <div style="text-align: center; margin-top: 25px;">
+            <a href="https://discord.gg/WBvYzczWfG" style="background: #7289DA; color: white; text-decoration: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; display: inline-block; box-shadow: 0 4px 15px rgba(114,137,218,0.4);">💬 Join Our Discord</a>
+        </div>
+    </div>
+
+    <div style="background: #1e1e1e; border-radius: 12px; padding: 35px; margin-bottom: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+        <h2 style="color: #4FC3F7; font-size: 2rem; margin-top: 0; border-bottom: 2px solid #4FC3F7; padding-bottom: 10px;">📦 System Requirements (Typical)</h2>
+        <ul style="padding-left: 20px; line-height: 1.8;">
+            <li><strong>OS:</strong> Windows 7 or newer, macOS 10.13+, Ubuntu 18.04+ / similar Linux distro</li>
+            <li><strong>Processor:</strong> Dual-core CPU 2 GHz or faster</li>
+            <li><strong>Memory:</strong> 2 GB RAM minimum (4 GB recommended)</li>
+            <li><strong>Hard Drive:</strong> 500 MB free space</li>
+            <li><strong>Graphics:</strong> Any GPU with OpenGL 3.3 support</li>
+        </ul>
+        <p><em>These are typical requirements. Most modern systems will run OpenXW without any issues.</em></p>
+    </div>
+
+    <div style="background: #3a3a3a; border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 2px solid #ff5722; box-shadow: 0 6px 20px rgba(255,87,34,0.2);">
+        <h2 style="color: #ff5722; font-size: 1.8rem; margin-top: 0; text-align: center;">⚠️ Important Legal Notice</h2>
+        <p style="text-align: center; font-size: 1.1rem;">OpenXW is a non-commercial fan project. It contains <strong>no original game data</strong>. You must own a legitimate copy of <em>Star Wars: X-Wing</em> to use this software. The game is available for purchase at <a href="https://www.gog.com/en/game/star_wars_xwing_special_edition" style="color: #ff5722; font-weight: bold;">GOG.com</a>.</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px; color: #888; font-size: 0.9rem; border-top: 1px solid #333; padding-top: 30px;">
+        <p>OpenXW – A fan-made tribute to Star Wars: X-Wing. Not affiliated with Lucasfilm, Disney, or GOG.</p>
+        <p>Released under an open-source license. Star Wars © Lucasfilm Ltd.</p>
+    </div>
+
 </div>
-
-<footer>
-  <div class="wrap foot">
-    <span class="fm">Zaine Cooper</span>
-    <span>© 2026 · Marysville, WA</span>
-    <span>Logged as it ships.</span>
-  </div>
-</footer>
-
-<script>
-(function(){
-  "use strict";
-  /* Live Marysville clock (Pacific Time) */
-  var el = document.getElementById("clock");
-  function tick(){
-    try{
-      el.textContent = new Intl.DateTimeFormat("en-US",{
-        hour:"numeric",minute:"2-digit",timeZone:"America/Los_Angeles"
-      }).format(new Date());
-    }catch(e){
-      el.textContent = new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
-    }
-  }
-  tick();
-  setInterval(tick, 20000);
-})();
-</script>
 </body>
 </html>
